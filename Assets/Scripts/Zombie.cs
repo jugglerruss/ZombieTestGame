@@ -48,6 +48,10 @@ public class Zombie : Character
             }
         }
     }
+    private void OnDestroy()
+    {
+        StopAllCoroutines();
+    }
     public void TakeDamage(int damage, Hero hero)
     {
         _characterData.Health -= damage;

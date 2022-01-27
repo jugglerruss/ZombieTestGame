@@ -12,9 +12,13 @@ public class Spawner : MonoBehaviour
 
     private Hero _hero;
     private Zombie _zombie;
+    private List<Zombie> _zombies;
+    private List<AmmoBox> _ammoBoxes;
     private void Start()
     {
         SpawnHero();
+        _zombies = new List<Zombie>();
+        _ammoBoxes = new List<AmmoBox>();
     }
     private void Update()
     {
@@ -27,12 +31,28 @@ public class Spawner : MonoBehaviour
             SpawnAmmoBox();
         }
     }
+    public void Restart()
+    {
+        SpawnHero();
+        foreach (var zombie in _zombies)
+        {
+            if(zombie != null)
+                Destroy(zombie.gameObject);
+        }
+        foreach (var box in _ammoBoxes)
+        {
+            if (box != null)
+                Destroy(box.gameObject);
+        }
+        _UI.HideRestart();
+    }
     private void SpawnAmmoBox()
     {
         var spawnPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         spawnPosition.z = 0;
         var ammoBox = Instantiate(_ammoBoxPrefab, spawnPosition, Quaternion.identity);
         ammoBox.Init(_config.AmmoBox);
+        _ammoBoxes.Add(ammoBox);
     }
     private void SpawnHero()
     {
@@ -51,6 +71,7 @@ public class Spawner : MonoBehaviour
         };
         _hero.OnHPChange += _UI.SetHP;
         _hero.OnAmmoChange += _UI.SetAmmo;
+        _hero.OnDead += _UI.ShowRestart;
         _hero.Initialize(configHero, _config.AmmoHero);
     }
     private void SpawnZombie()
@@ -71,5 +92,6 @@ public class Spawner : MonoBehaviour
             ViewAreaAngle = _config.ViewAreaAngleZombie
         };
         _zombie.Initialize(configZombie, _config.StepsToChangeDirectionZombie, _config.StepsToCoolDownZombie, Random.Range(_config.MinPassiveVelocityZombie, _config.MaxPassiveVelocityZombie));
+        _zombies.Add(_zombie);
     }
 }

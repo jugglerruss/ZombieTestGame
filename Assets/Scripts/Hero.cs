@@ -11,6 +11,7 @@ public class Hero : Character
     public Zombie Target { get; protected set; }
     public Action<int> OnHPChange;
     public Action<int> OnAmmoChange;
+    public Action OnDead;
     public void Initialize(CharacterData characterData, int ammo)
     {
         _characterData = characterData;
@@ -30,6 +31,7 @@ public class Hero : Character
     {
         OnHPChange = null;
         OnAmmoChange = null;
+        OnDead = null;
     }
     protected override void FixedUpdate()
     {
@@ -70,7 +72,10 @@ public class Hero : Character
         if (Target == null)
             Target = zombie;
         if (_characterData.Health <= 0)
+        {
+            OnDead?.Invoke();
             Destroy(gameObject);
+        }
     }
     public Vector3 FindAmmoBox()
     {
