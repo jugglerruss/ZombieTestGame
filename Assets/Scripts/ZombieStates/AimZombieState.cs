@@ -17,4 +17,8 @@ public class AimZombieState : State
         Character.ChangeAnimation(AnimationMain.walk, _zombie.Target.transform.position);
         Character.MoveTo(_zombie.Target.transform.position);
     }
+    public override string ToString()
+    {
+        return "AimTarget";
+    }
 }

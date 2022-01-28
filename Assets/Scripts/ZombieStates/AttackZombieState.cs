@@ -24,9 +24,12 @@ public class AttackZombieState : State
             else
             {
                 Character.MoveTo(_zombie.Target.transform.position);
-            }
-                
+            }                
         }
     }
-    
+    public override string ToString()
+    {
+        return "AttackTarget";
+    }
+
 }

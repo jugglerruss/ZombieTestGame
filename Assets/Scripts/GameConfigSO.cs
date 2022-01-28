@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "GameConfig", menuName = "SO/new GameConfigSO", order = 51)]
 public class GameConfigSO : ScriptableObject
 {
     [Header ("Hero settings")]

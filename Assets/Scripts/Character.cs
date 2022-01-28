@@ -2,12 +2,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
+
 public class Character : MonoBehaviour
 {
     [SerializeField] protected Animator _animator;
     [SerializeField] protected Collider2D _circleView;
     [SerializeField] protected Collider2D _circleAttack;
     [SerializeField] protected Transform _forwardDirection;
+    [SerializeField] protected TextMeshPro _textDebugTop;
+    [SerializeField] protected TextMeshPro _textDebugBottom;
 
     protected Collider2D _bodyCollider;
     protected CharacterData _characterData;
@@ -15,11 +19,16 @@ public class Character : MonoBehaviour
     protected State _stateAim;
     protected State _stateAttack;
     protected State _stateCurrent;
+    protected Vector2[] _pointsView = new Vector2[3];
+    protected Vector2[] _pointsAttack = new Vector2[3];
     public int Damage { get => _characterData.Damage; }
     public bool IsReloaded { get; protected set; }
     public bool IsEnemyInAttackRange { get; protected set; }
     public bool IsDead { get; protected set; }
-  
+    private void Awake()
+    {
+        _bodyCollider = GetComponent<Collider2D>();
+    }
     protected void Init()
     {
         var radiousView = (float)_characterData.ViewAreaRadius / 50;
@@ -27,23 +36,39 @@ public class Character : MonoBehaviour
         var radiousAttack = (float)_characterData.DamageAreaRadious / 50;
         _circleAttack.transform.localScale = new Vector3(radiousAttack, radiousAttack);
 
-        _bodyCollider = GetComponent<Collider2D>();
         IsReloaded = true;
     }
     protected virtual void FixedUpdate()
     {
         DrawAngle();
+        DisplayDebugInfo();
     }
     private void OnDisable()
     {
         StopAllCoroutines();
     }
-    private void DrawAngle()
+    public virtual void DebugViewSetActive(bool isDebug)
+    {
+        _textDebugTop.enabled = isDebug;
+        _textDebugBottom.enabled = isDebug;
+    }
+    private void DisplayDebugInfo()
+    {
+        _textDebugTop.text = _stateCurrent.ToString();
+        _textDebugBottom.text = _characterData.Health.ToString();
+    }
+    protected virtual void DrawAngle()
     {
         var viewAngle1 = DirectionFromAngle(Vector2.SignedAngle(Vector2.right, _forwardDirection.localPosition) - _characterData.ViewAreaAngle / 2);
         var viewAngle2 = DirectionFromAngle(Vector2.SignedAngle(Vector2.right, _forwardDirection.localPosition) + _characterData.ViewAreaAngle / 2);
-        Debug.DrawLine(transform.position, transform.position + viewAngle1 * (float)_characterData.ViewAreaRadius / 100);
-        Debug.DrawLine(transform.position, transform.position + viewAngle2 * (float)_characterData.ViewAreaRadius / 100);
+        var attackAngle1 = DirectionFromAngle(Vector2.SignedAngle(Vector2.right, _forwardDirection.localPosition) - _characterData.DamageAreaAngle / 2);
+        var attackAngle2 = DirectionFromAngle(Vector2.SignedAngle(Vector2.right, _forwardDirection.localPosition) + _characterData.DamageAreaAngle / 2);
+        _pointsView[0] = transform.position + viewAngle1 * (float)_characterData.ViewAreaRadius / 100;
+        _pointsView[1] = transform.position;
+        _pointsView[2] = transform.position + viewAngle2 * (float)_characterData.ViewAreaRadius / 100;
+        _pointsAttack[0] = transform.position + attackAngle1 * (float)_characterData.DamageAreaRadious / 100;
+        _pointsAttack[1] = transform.position;
+        _pointsAttack[2] = transform.position + attackAngle2 * (float)_characterData.DamageAreaRadious / 100;
     }
 
     protected void SetState(State startState)

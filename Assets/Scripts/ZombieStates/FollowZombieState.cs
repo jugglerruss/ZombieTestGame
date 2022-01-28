@@ -19,6 +19,9 @@ public class FollowZombieState : State
         }
         else
             IsFinished = true;
-
+    }
+    public override string ToString()
+    {
+        return "Slave";
     }
 }

@@ -19,4 +19,8 @@ public class WalkHeroState : State
         if (nextPosition == Character.transform.position)
             IsFinished = true;
     }
+    public override string ToString()
+    {
+        return "Walk";
+    }
 }

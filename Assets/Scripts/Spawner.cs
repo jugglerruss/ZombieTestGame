@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Spawner : MonoBehaviour
 {
+    [SerializeField] private GameSaverSO _gameSaver;
     [SerializeField] private GameConfigSO _config;
     [SerializeField] private Hero _heroPrefab;
     [SerializeField] private Zombie _zombiePrefab;
@@ -15,8 +16,12 @@ public class Spawner : MonoBehaviour
     private List<Zombie> _zombies;
     private List<AmmoBox> _ammoBoxes;
     private bool _isGameStop;
+    private bool _isDebug;
     private void Start()
     {
+        _gameSaver.Load();
+        _gameSaver.Save();
+        _isDebug = true;
         SpawnHero();
         _zombies = new List<Zombie>();
         _ammoBoxes = new List<AmmoBox>();
@@ -25,13 +30,17 @@ public class Spawner : MonoBehaviour
     {
         if (_isGameStop)
             return;
+
+        var mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        if (_UI.TopBorderY < mousePosition.y)
+            return;
         if (Input.GetMouseButtonDown(0))
         {
-            SpawnZombie();
+            SpawnZombie(mousePosition);
         }
         if (Input.GetMouseButtonDown(1))
         {
-            SpawnAmmoBox();
+            SpawnAmmoBox(mousePosition);
         }
     }
     public void Restart()
@@ -55,9 +64,8 @@ public class Spawner : MonoBehaviour
         _isGameStop = true;
         _UI.ShowRestart();
     }
-    private void SpawnAmmoBox()
+    private void SpawnAmmoBox(Vector3 spawnPosition)
     {
-        var spawnPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         spawnPosition.z = 0;
         var ammoBox = Instantiate(_ammoBoxPrefab, spawnPosition, Quaternion.identity);
         ammoBox.transform.SetParent(transform);
@@ -84,9 +92,8 @@ public class Spawner : MonoBehaviour
         _hero.OnDead += StopGame;
         _hero.Initialize(configHero, _config.AmmoHero);
     }
-    private void SpawnZombie()
+    private void SpawnZombie(Vector3 spawnPosition)
     {
-        var spawnPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         spawnPosition.z = 0;
         _zombie = Instantiate(_zombiePrefab, spawnPosition, Quaternion.identity);
         _zombie.transform.SetParent(transform);
@@ -102,7 +109,18 @@ public class Spawner : MonoBehaviour
             ViewAreaRadius = Random.Range(_config.MinViewAreaRadiusZombie, _config.MaxViewAreaRadiusZombie),
             ViewAreaAngle = _config.ViewAreaAngleZombie
         };
-        _zombie.Initialize(configZombie, _config.StepsToChangeDirectionZombie, _config.StepsToCoolDownZombie, Random.Range(_config.MinPassiveVelocityZombie, _config.MaxPassiveVelocityZombie));
+        _zombie.Initialize(configZombie, _config.StepsToChangeDirectionZombie, _config.StepsToCoolDownZombie, Random.Range(_config.MinPassiveVelocityZombie, _config.MaxPassiveVelocityZombie), _isDebug);
         _zombies.Add(_zombie);
+    }
+    public void DebugViewSetActive()
+    {
+        _isDebug = !_isDebug;
+        _UI.DebugViewSetActive(_isDebug);
+        _hero.DebugViewSetActive(_isDebug);
+        foreach (var zombie in _zombies)
+        {
+            if (zombie != null)
+                zombie.DebugViewSetActive(_isDebug);
+        }
     }
 }

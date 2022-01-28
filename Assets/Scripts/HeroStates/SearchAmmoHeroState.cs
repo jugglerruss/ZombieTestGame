@@ -20,4 +20,8 @@ public class SearchAmmoHeroState : State
         if (nextPosition == Character.transform.position)
             IsFinished = true;
     }
+    public override string ToString()
+    {
+        return "SearchAmmo";
+    }
 }

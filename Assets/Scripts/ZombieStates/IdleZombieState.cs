@@ -21,4 +21,8 @@ public class IdleZombieState : State
         steps++;
         if (zombie.StepsToChangeDirection == steps) IsFinished = true;
     }
+    public override string ToString()
+    {
+        return "Idle";
+    }
 }

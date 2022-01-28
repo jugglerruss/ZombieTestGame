@@ -8,7 +8,9 @@ public class Zombie : Character
     public Hero Target { get; protected set; }
     public Zombie TargetFollow { get; protected set; }
     public State FollowState;
-    public void Initialize(CharacterData characterData, int stepsToChangeDirection, int stepsToCoolDown, int passiveVelocity)
+    private HeroDetectCollider _heroDetectColliderView;
+    private HeroDetectCollider _heroDetectColliderAttack;
+    public void Initialize(CharacterData characterData, int stepsToChangeDirection, int stepsToCoolDown, int passiveVelocity, bool isDebug)
     {
         _stepsToChangeDirection = stepsToChangeDirection;
         _stepsToCoolDown = stepsToCoolDown;
@@ -18,8 +20,11 @@ public class Zombie : Character
         _stateAim = new AimZombieState();
         _stateAttack = new AttackZombieState();
         FollowState = new FollowZombieState();
+        _heroDetectColliderView = _circleView.GetComponent<HeroDetectCollider>();
+        _heroDetectColliderAttack = _circleAttack.GetComponent<HeroDetectCollider>();
         SetState(_stateIdle);
         Init();
+        DebugViewSetActive(isDebug);
     }
     protected override void FixedUpdate()
     {
@@ -51,6 +56,18 @@ public class Zombie : Character
     private void OnDestroy()
     {
         StopAllCoroutines();
+    }
+    protected override void DrawAngle()
+    {
+        base.DrawAngle();
+        _heroDetectColliderView.DrawLines(_pointsView, Color.white);
+        _heroDetectColliderAttack.DrawLines(_pointsAttack, Color.red);
+    }
+    public override void DebugViewSetActive(bool isDebug)
+    {
+        base.DebugViewSetActive(isDebug);
+        _heroDetectColliderView.DebugViewSetActive(isDebug);
+        _heroDetectColliderAttack.DebugViewSetActive(isDebug);
     }
     public void TakeDamage(int damage, Hero hero)
     {

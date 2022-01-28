@@ -16,4 +16,8 @@ public class AimHeroState : State
             return;
         Character.MoveTo(_hero.Target.transform.position);
     }
+    public override string ToString()
+    {
+        return "Aim";
+    }
 }

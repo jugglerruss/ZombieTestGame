@@ -18,4 +18,8 @@ public class IdleHeroState : State
             return;
         _timer++;
     }
+    public override string ToString()
+    {
+        return "Idle";
+    }
 }

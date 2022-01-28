@@ -7,7 +7,9 @@ public class Hero : Character
 {
     private int _ammo;
     private State _stateSearchAmmo;
-    private State _stateWalk; 
+    private State _stateWalk;
+    private ZombieDetectCollider _zombieDetectColliderView;
+    private ZombieDetectCollider _zombieDetectColliderAttack;
     public Zombie Target { get; protected set; }
     public Action<int> OnHPChange;
     public Action<int> OnAmmoChange;
@@ -22,10 +24,15 @@ public class Hero : Character
         _stateSearchAmmo = new SearchAmmoHeroState();
         _stateWalk = new WalkHeroState();
         _stateCurrent = _stateIdle;
+
+        _zombieDetectColliderView = _circleView.GetComponent<ZombieDetectCollider>();
+        _zombieDetectColliderAttack = _circleAttack.GetComponent<ZombieDetectCollider>();
+
         SetState(_stateWalk);
         Init();
         OnAmmoChange?.Invoke(_ammo);
         OnHPChange?.Invoke(_characterData.Health);
+
     }
     private void OnDestroy()
     {
@@ -62,6 +69,18 @@ public class Hero : Character
                 }
             }
         }
+    }
+    protected override void DrawAngle()
+    {
+        base.DrawAngle();
+        _zombieDetectColliderView.DrawLines(_pointsView,Color.white);
+        _zombieDetectColliderAttack.DrawLines(_pointsAttack, Color.red);
+    }
+    public override void DebugViewSetActive(bool isDebug)
+    {
+        base.DebugViewSetActive(isDebug);
+        _zombieDetectColliderView.DebugViewSetActive(isDebug);
+        _zombieDetectColliderAttack.DebugViewSetActive(isDebug);
     }
     public void TakeDamage(int damage, Zombie zombie)
     {
