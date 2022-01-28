@@ -14,6 +14,7 @@ public class Spawner : MonoBehaviour
     private Zombie _zombie;
     private List<Zombie> _zombies;
     private List<AmmoBox> _ammoBoxes;
+    private bool _isGameStop;
     private void Start()
     {
         SpawnHero();
@@ -22,6 +23,8 @@ public class Spawner : MonoBehaviour
     }
     private void Update()
     {
+        if (_isGameStop)
+            return;
         if (Input.GetMouseButtonDown(0))
         {
             SpawnZombie();
@@ -33,6 +36,7 @@ public class Spawner : MonoBehaviour
     }
     public void Restart()
     {
+        _isGameStop = false;
         SpawnHero();
         foreach (var zombie in _zombies)
         {
@@ -46,17 +50,23 @@ public class Spawner : MonoBehaviour
         }
         _UI.HideRestart();
     }
+    private void StopGame()
+    {
+        _isGameStop = true;
+        _UI.ShowRestart();
+    }
     private void SpawnAmmoBox()
     {
         var spawnPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         spawnPosition.z = 0;
         var ammoBox = Instantiate(_ammoBoxPrefab, spawnPosition, Quaternion.identity);
+        ammoBox.transform.SetParent(transform);
         ammoBox.Init(_config.AmmoBox);
         _ammoBoxes.Add(ammoBox);
     }
     private void SpawnHero()
     {
-        _hero = Instantiate(_heroPrefab);
+        _hero = Instantiate(_heroPrefab, transform);
         var configHero = new CharacterData
         {
             Health = _config.HealthHero,
@@ -71,7 +81,7 @@ public class Spawner : MonoBehaviour
         };
         _hero.OnHPChange += _UI.SetHP;
         _hero.OnAmmoChange += _UI.SetAmmo;
-        _hero.OnDead += _UI.ShowRestart;
+        _hero.OnDead += StopGame;
         _hero.Initialize(configHero, _config.AmmoHero);
     }
     private void SpawnZombie()
@@ -79,6 +89,7 @@ public class Spawner : MonoBehaviour
         var spawnPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         spawnPosition.z = 0;
         _zombie = Instantiate(_zombiePrefab, spawnPosition, Quaternion.identity);
+        _zombie.transform.SetParent(transform);
         var configZombie = new CharacterData
         {
             Health = Random.Range(_config.MinHealthZombie, _config.MaxHealthZombie),

@@ -17,7 +17,7 @@ MonoBehaviour:
   _turnVelocityHero: 200
   _reloadTimeHero: 1
   _damageHero: 20
-  _ammoHero: 51
+  _ammoHero: 50
   _damageAreaRadiousHero: 50
   _damageAreaAngleHero: 10
   _viewAreaRadiusHero: 50
