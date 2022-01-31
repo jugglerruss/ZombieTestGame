@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
 public class GameConfigSO : ScriptableObject
 {
     [Header ("Hero settings")]
@@ -39,6 +40,41 @@ public class GameConfigSO : ScriptableObject
     [Header("Ammo settings")]
     [SerializeField] private int _ammoBox;
 
+    public void ImportSave(ConfigJson.Config save)
+    {
+        _healthHero = save.hero.health;
+        _velocityHero = save.hero.velocity;
+        _turnVelocityHero = save.hero.turnVelocity;
+        _reloadTimeHero = save.hero.reloadTime;
+        _damageHero = save.hero.damage;
+        _ammoHero = save.hero.ammo;
+        _damageAreaRadiousHero = save.hero.damageArea.radius;
+        _damageAreaAngleHero = save.hero.damageArea.angle;
+        _viewAreaRadiusHero = save.hero.viewArea.radius;
+        _viewAreaAngleHero = save.hero.viewArea.angle;
+
+        _minHealthZombie = save.zombie.health[0];
+        _maxHealthZombie = save.zombie.health[1];
+        _minActiveVelocityZombie = save.zombie.activeVelocity[0];
+        _maxActiveVelocityZombie = save.zombie.activeVelocity[1];
+        _minPassiveVelocityZombie = save.zombie.passiveVelocity[0];
+        _maxPassiveVelocityZombie = save.zombie.passiveVelocity[1];
+        _minTurnVelocityZombie = save.zombie.turnVelocity[0];
+        _maxTurnVelocityZombie = save.zombie.turnVelocity[1];
+        _minReloadTimeZombie = save.zombie.reloadTime[0];
+        _maxReloadTimeZombie = save.zombie.reloadTime[1];
+        _stepsToChangeDirectionZombie = save.zombie.stepsToChangeDirection;
+        _stepsToCoolDownZombie = save.zombie.stepsToCoolDown;
+        _minDamageZombie = save.zombie.damage[0];
+        _maxDamageZombie = save.zombie.damage[1];
+        _minDamageAreaRadiusZombie = save.zombie.damageArea.radius[0];
+        _maxDamageAreaRadiusZombie = save.zombie.damageArea.radius[1];
+        _damageAreaAngleZombie = save.zombie.damageArea.angle;
+        _minViewAreaRadiusZombie = save.zombie.viewArea.radius[0];
+        _maxViewAreaRadiusZombie = save.zombie.viewArea.radius[1];
+        _viewAreaAngleZombie = save.zombie.viewArea.angle;
+        _ammoBox = save.misc.ammoBox;
+    }
     public int HealthHero { get => _healthHero;  }
     public int VelocityHero { get => _velocityHero;  }
     public int TurnVelocityHero { get => _turnVelocityHero;}
@@ -70,4 +106,5 @@ public class GameConfigSO : ScriptableObject
     public int MaxViewAreaRadiusZombie { get => _maxViewAreaRadiusZombie;  }
     public int ViewAreaAngleZombie { get => _viewAreaAngleZombie;  }
     public int AmmoBox { get => _ammoBox; }
+
 }
